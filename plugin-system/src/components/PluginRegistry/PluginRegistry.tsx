@@ -41,7 +41,7 @@ export interface PluginRegistryProps {
  */
 export function PluginRegistry(props: PluginRegistryProps): ReactElement {
   const {
-    pluginLoader: { getInstalledPlugins, importPluginModule },
+    pluginLoader: { getInstalledPlugins, importPluginModule, baseURL: pluginsBaseURL },
     children,
     defaultPluginKinds,
   } = props;
@@ -103,8 +103,8 @@ export function PluginRegistry(props: PluginRegistryProps): ReactElement {
 
   // Create the registry's context value and render
   const context = useMemo(
-    () => ({ getPlugin, listPluginMetadata, defaultPluginKinds }),
-    [getPlugin, listPluginMetadata, defaultPluginKinds],
+    () => ({ getPlugin, listPluginMetadata, defaultPluginKinds, pluginsBaseURL }),
+    [getPlugin, listPluginMetadata, defaultPluginKinds, pluginsBaseURL],
   );
   return <PluginRegistryContext.Provider value={context}>{children}</PluginRegistryContext.Provider>;
 }

@@ -12,7 +12,6 @@
 // limitations under the License.
 
 import { loadPlugin } from './PluginRuntime';
-import { remotePluginLoader } from './remotePluginLoader';
 
 const registerRemotes = vi.fn();
 const loadRemote = vi.fn().mockResolvedValue({});
@@ -27,23 +26,19 @@ describe('loadPlugin', () => {
   });
 
   it('should use the plugin baseURL when provided', async () => {
-    remotePluginLoader({ baseURL: '/perses', apiPrefix: '/perses' });
-
     await loadPlugin({
       moduleName: 'Tempo',
       pluginName: 'TempoExplorer',
       version: '0.59.0',
-      baseURL: 'https://cdn.example.com/plugins',
+      baseURL: '/perses/plugins',
     });
 
     expect(registerRemotes).toHaveBeenCalledWith([
-      expect.objectContaining({ entry: 'https://cdn.example.com/plugins/Tempo~0.59.0/mf-manifest.json' }),
+      expect.objectContaining({ entry: '/perses/plugins/Tempo~0.59.0/mf-manifest.json' }),
     ]);
   });
 
-  it('should fall back to /plugins when the loader has no base URL', async () => {
-    remotePluginLoader();
-
+  it('should fall back to /plugins when no baseURL is provided', async () => {
     await loadPlugin({ moduleName: 'Tempo', pluginName: 'TempoExplorer', version: '0.59.0' });
 
     expect(registerRemotes).toHaveBeenCalledWith([
@@ -51,13 +46,11 @@ describe('loadPlugin', () => {
     ]);
   });
 
-  it('should fall back to the base URL configured on the loader when the plugin has none', async () => {
-    remotePluginLoader({ baseURL: '/perses', apiPrefix: '/perses' });
-
-    await loadPlugin({ moduleName: 'Tempo', pluginName: 'TempoExplorer', version: '0.59.0' });
+  it('should resolve plugins from the site root when baseURL is an empty string', async () => {
+    await loadPlugin({ moduleName: 'Tempo', pluginName: 'TempoExplorer', version: '0.59.0', baseURL: '' });
 
     expect(registerRemotes).toHaveBeenCalledWith([
-      expect.objectContaining({ entry: '/perses/plugins/Tempo~0.59.0/mf-manifest.json' }),
+      expect.objectContaining({ entry: '/Tempo~0.59.0/mf-manifest.json' }),
     ]);
   });
 });

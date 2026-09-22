@@ -22,6 +22,7 @@ const listPluginMetadata = vi.fn();
 vi.mock('@perses-dev/plugin-system', () => ({
   PluginLoaderComponent: (props: unknown): null => pluginLoaderComponent(props),
   useListPluginMetadata: (): unknown => listPluginMetadata(),
+  usePluginRegistry: (): unknown => ({ pluginsBaseURL: '/perses/plugins' }),
 }));
 
 vi.mock('../ExploreToolbar', () => ({
@@ -29,7 +30,7 @@ vi.mock('../ExploreToolbar', () => ({
 }));
 
 describe('ExploreManager', () => {
-  it('should load the explorer plugin with its module version and registry', async () => {
+  it('should load the explorer plugin with its module version, registry and the configured base URL', async () => {
     listPluginMetadata.mockReturnValue({
       data: [
         {
@@ -54,6 +55,7 @@ describe('ExploreManager', () => {
             moduleName: 'Tempo',
             version: '0.59.0',
             registry: 'perses',
+            baseURL: '/perses/plugins',
           },
         }),
       );

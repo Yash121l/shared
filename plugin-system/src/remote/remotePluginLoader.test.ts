@@ -27,7 +27,6 @@ import { remotePluginLoader } from './remotePluginLoader';
 // Mock the loadPlugin function
 vi.mock('./PluginRuntime', () => ({
   loadPlugin: vi.fn(),
-  setPluginsAssetsBaseURL: vi.fn(),
 }));
 
 const mockLoadPlugin = vi.mocked(loadPlugin);
@@ -47,6 +46,16 @@ describe('remotePluginLoader', () => {
 
   afterAll(() => {
     mockConsoleError.mockRestore();
+  });
+
+  describe('baseURL', () => {
+    it('should default to /plugins', () => {
+      expect(remotePluginLoader().baseURL).toBe('/plugins');
+    });
+
+    it('should be prefixed with the configured baseURL', () => {
+      expect(remotePluginLoader({ baseURL: '/perses' }).baseURL).toBe('/perses/plugins');
+    });
   });
 
   describe('getInstalledPlugins', () => {
