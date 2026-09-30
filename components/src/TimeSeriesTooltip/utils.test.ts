@@ -169,11 +169,12 @@ describe('getTooltipStyles', () => {
     target: null,
   };
 
-  it('stacks a pinned tooltip above the table legend header and below the app bar', () => {
+  it('stacks a pinned tooltip above the table legend header and below the panel header', () => {
     const { zIndex } = getTooltipStyles(theme, pinnedPos);
     // react-virtuoso renders the table legend's sticky header at z-index 2.
     expect(zIndex).toBeGreaterThan(2);
-    expect(zIndex).toBeLessThan(theme.zIndex.appBar);
+    // PanelHeader in @perses-dev/dashboards sits at z-index 5.
+    expect(zIndex).toBeLessThan(5);
   });
 
   it('stacks an unpinned tooltip at the theme tooltip layer', () => {
