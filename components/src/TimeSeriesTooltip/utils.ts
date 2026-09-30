@@ -116,8 +116,9 @@ export function getTooltipStyles(
     opacity: 1,
     // Animating transform causes intermediate positions outside the viewport; animate opacity/visibility instead.
     transition: 'opacity 0.1s ease-out, visibility 0.1s ease-out',
-    // Pinned tooltip should not float above the drawer/sticky header.
-    zIndex: pinnedPos !== null ? 'auto' : theme.zIndex.tooltip,
+    // A pinned tooltip must cover the table legend's sticky header (z-index 2, set by react-virtuoso)
+    // but stay below the drawer and the sticky dashboard header.
+    zIndex: pinnedPos !== null ? 3 : theme.zIndex.tooltip,
     overflow: 'hidden',
     '&:hover': {
       overflowY: 'auto',
