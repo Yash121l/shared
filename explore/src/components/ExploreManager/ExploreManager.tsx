@@ -35,9 +35,17 @@ export function getExplorerKey(plugin: PluginMetadataWithModule): string {
   return `${plugin.module.name}-${plugin.spec.name}`;
 }
 
+/** Same precedence as the plugin registry: a plugin served in dev wins over installed ones, whatever their versions. */
+function isPreferredOver(plugin: PluginMetadataWithModule, other: PluginMetadataWithModule): boolean {
+  if (Boolean(plugin.inDev) !== Boolean(other.inDev)) {
+    return Boolean(plugin.inDev);
+  }
+  return comparePluginVersions(plugin.module.version, other.module.version) > 0;
+}
+
 /**
  * Explore plugins sorted by display name, matching the order of the explorer tabs. When several versions of the same
- * explorer are installed, only the latest one is kept.
+ * explorer are installed, only the one served in dev, or else the latest, is kept.
  */
 export function useSortedExplorerPlugins(): PluginMetadataWithModule[] | undefined {
   const plugins = useListPluginMetadata(['Explore']);
@@ -49,7 +57,7 @@ export function useSortedExplorerPlugins(): PluginMetadataWithModule[] | undefin
     for (const plugin of plugins.data) {
       const key = getExplorerKey(plugin);
       const existing = latestByKey.get(key);
-      if (!existing || comparePluginVersions(plugin.module.version, existing.module.version) > 0) {
+      if (!existing || isPreferredOver(plugin, existing)) {
         latestByKey.set(key, plugin);
       }
     }

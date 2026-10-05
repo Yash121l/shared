@@ -140,3 +140,30 @@ it.each([
     }),
   );
 });
+
+it('shows the plugin served in dev over a newer installed version', () => {
+  listPluginMetadata.mockReturnValue({
+    data: [
+      {
+        kind: 'Explore',
+        spec: { name: 'TempoExplorer', display: { name: 'Tempo' } },
+        module: { name: 'Tempo', version: '0.60.0', registry: 'perses' },
+      },
+      {
+        kind: 'Explore',
+        spec: { name: 'TempoExplorer', display: { name: 'Tempo' } },
+        module: { name: 'Tempo', version: '0.59.0', registry: 'perses' },
+        inDev: true,
+      },
+    ],
+  });
+  render(
+    <ExplorerManagerProvider defaultExplorer="Tempo-TempoExplorer">
+      <ExploreManager />
+    </ExplorerManagerProvider>,
+  );
+  expect(screen.getAllByRole('tab').map((tab) => tab.textContent)).toEqual(['Tempo']);
+  expect(pluginLoaderComponent).toHaveBeenLastCalledWith(
+    expect.objectContaining({ plugin: expect.objectContaining({ version: '0.59.0' }) }),
+  );
+});
